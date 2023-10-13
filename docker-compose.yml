@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+
+  fx-deal-service:
+    build:
+      context: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/fxdeals
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 12345678
+
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: fxdeals
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345678
+    ports:
+      - "5438:5432"
