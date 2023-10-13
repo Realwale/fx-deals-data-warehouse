@@ -1,5 +1,5 @@
 build:
-	mvn clean package
+	sudo mvn clean package
 
 run:
 	sudo docker-compose up
