@@ -3,8 +3,10 @@ package com.progresoft.fxdealsdatawarehouse.controller;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+
 import com.progresoft.fxdealsdatawarehouse.dto.request.FXDealRequest;
 import com.progresoft.fxdealsdatawarehouse.dto.response.FXDealResponse;
+import com.progresoft.fxdealsdatawarehouse.model.FXDeal;
 import com.progresoft.fxdealsdatawarehouse.service.FXDealService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +20,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 class FXDealControllerTest {
 
@@ -34,20 +37,28 @@ class FXDealControllerTest {
 
     @Test
     void testSaveFXDeal_Success() {
+        Instant testInstant = Instant.now();
         FXDealRequest request = new FXDealRequest(
-                "123",
+                UUID.randomUUID().toString(),
                 "USD",
                 "EUR",
-                Instant.now(),
+                testInstant,
                 BigDecimal.valueOf(1000)
         );
-        FXDealResponse serviceResponse = new FXDealResponse(true, false, "SomeData", HttpStatus.CREATED.value());
-        when(fxDealService.saveFXDeal(request)).thenReturn(serviceResponse);
+        FXDeal expectedDeal = new FXDeal(
+                request.getUniqueId(),
+                request.getFromCurrency(),
+                request.getToCurrency(),
+                testInstant,
+                request.getDealAmount()
+        );
+        when(fxDealService.saveFXDeal(request)).thenReturn(expectedDeal);
 
-        ResponseEntity<FXDealResponse> response = fxDealController.saveFXDeal(request);
+        ResponseEntity<FXDeal> responseEntity = fxDealController.saveFXDeal(request);
 
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals(serviceResponse, response.getBody());
+        assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
+        assertEquals(expectedDeal, responseEntity.getBody());
+
     }
 
     @Test
@@ -64,14 +75,15 @@ class FXDealControllerTest {
 
     @Test
     void testGetAllFXDeals() {
-        FXDealResponse deal1 = new FXDealResponse(true, false, "SomeData1", HttpStatus.OK.value());
-        FXDealResponse deal2 = new FXDealResponse(true, false, "SomeData2", HttpStatus.OK.value());
+        FXDeal deal1 = new FXDeal();
+        FXDeal deal2 = new FXDeal();
         when(fxDealService.getAllFXDeals()).thenReturn(Arrays.asList(deal1, deal2));
 
-        ResponseEntity<List<FXDealResponse>> response = fxDealController.getAllFXDeals();
+        ResponseEntity<List<FXDeal>> deals = fxDealController.getAllFXDeals();
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertTrue(response.getBody().contains(deal1));
-        assertTrue(response.getBody().contains(deal2));
+        assertEquals(HttpStatus.OK, deals.getStatusCode());
+        assertTrue(deals.getBody().contains(deal1));
+        assertTrue(deals.getBody().contains(deal2));
     }
+
 }

@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import com.progresoft.fxdealsdatawarehouse.dto.request.FXDealRequest;
 import com.progresoft.fxdealsdatawarehouse.dto.response.FXDealResponse;
+import com.progresoft.fxdealsdatawarehouse.exception.DuplicateDealException;
 import com.progresoft.fxdealsdatawarehouse.exception.NotFoundException;
 import com.progresoft.fxdealsdatawarehouse.model.FXDeal;
 import com.progresoft.fxdealsdatawarehouse.repository.FXDealRepository;
@@ -16,6 +17,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 
+import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -34,27 +37,26 @@ class FXDealServiceImplTest {
     }
 
     @Test
-    void testSaveFXDeal_AlreadyExists() {
-        FXDealRequest request = new FXDealRequest("123", "...", "...", null, null);
-        when(fxDealRepository.existsByUniqueId("123")).thenReturn(true);
+    void saveFXDeal_ShouldSaveAndReturnDeal() {
+        FXDealRequest request = new FXDealRequest("123", "USD", "EUR", Instant.now(), new BigDecimal(100));
 
-        FXDealResponse response = fxDealService.saveFXDeal(request);
+        when(fxDealRepository.existsByUniqueId(anyString())).thenReturn(false);
+        when(fxDealRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
-        assertEquals(HttpStatus.CONFLICT.value(), response.getStatusCode());
-        assertTrue(response.isError());
-        assertFalse(response.isSuccess());
+        FXDeal deal = fxDealService.saveFXDeal(request);
+
+        assertEquals("123", deal.getUniqueId());
     }
 
     @Test
-    void testSaveFXDeal_Success() {
-        FXDealRequest request = new FXDealRequest("123", "...", "...", null, null);
-        when(fxDealRepository.existsByUniqueId("123")).thenReturn(false);
+    void saveFXDeal_ShouldThrowDuplicateDealException() {
+        FXDealRequest request = new FXDealRequest("123", "USD", "EUR", Instant.now(), new BigDecimal(100));
 
-        FXDealResponse response = fxDealService.saveFXDeal(request);
+        when(fxDealRepository.existsByUniqueId(anyString())).thenReturn(true);
 
-        assertEquals(HttpStatus.CREATED.value(), response.getStatusCode());
-        assertFalse(response.isError());
-        assertTrue(response.isSuccess());
+        assertThrows(DuplicateDealException.class, () -> {
+            fxDealService.saveFXDeal(request);
+        });
     }
 
     @Test
@@ -78,13 +80,15 @@ class FXDealServiceImplTest {
 
     @Test
     void testGetAllFXDeals() {
+
         FXDeal deal1 = new FXDeal();
         FXDeal deal2 = new FXDeal();
         when(fxDealRepository.findAll()).thenReturn(Arrays.asList(deal1, deal2));
 
-        List<FXDealResponse> responses = fxDealService.getAllFXDeals();
+        List<FXDeal> deals = fxDealService.getAllFXDeals();
 
-        assertEquals(2, responses.size());
-        assertTrue(responses.stream().allMatch(r -> r.getStatusCode() == HttpStatus.OK.value()));
+        assertEquals(2, deals.size());
+        assertTrue(deals.contains(deal1));
+        assertTrue(deals.contains(deal2));
     }
 }
