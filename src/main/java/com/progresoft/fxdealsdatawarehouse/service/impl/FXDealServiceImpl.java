@@ -2,6 +2,7 @@ package com.progresoft.fxdealsdatawarehouse.service.impl;
 
 import com.progresoft.fxdealsdatawarehouse.dto.request.FXDealRequest;
 import com.progresoft.fxdealsdatawarehouse.dto.response.FXDealResponse;
+import com.progresoft.fxdealsdatawarehouse.exception.DuplicateDealException;
 import com.progresoft.fxdealsdatawarehouse.exception.NotFoundException;
 import com.progresoft.fxdealsdatawarehouse.model.FXDeal;
 import com.progresoft.fxdealsdatawarehouse.repository.FXDealRepository;
@@ -12,7 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 
 @Service
@@ -23,12 +24,11 @@ public class FXDealServiceImpl implements FXDealService {
     private final FXDealRepository fxDealRepository;
 
     @Override
-    public FXDealResponse saveFXDeal(FXDealRequest fxDealRequest) {
+    public FXDeal saveFXDeal(FXDealRequest fxDealRequest) {
 
             if (fxDealRepository.existsByUniqueId(fxDealRequest.getUniqueId())) {
                 log.warn("Attempt to save a duplicate deal with ID {}", fxDealRequest.getUniqueId());
-                return new FXDealResponse(false, true, "Deal already exists with ID: " + fxDealRequest.getUniqueId(),
-                        HttpStatus.CONFLICT.value());
+                throw new DuplicateDealException("Deal already exists with ID: " + fxDealRequest.getUniqueId());
             }
 
             FXDeal deal = FXDeal.builder()
@@ -42,7 +42,7 @@ public class FXDealServiceImpl implements FXDealService {
             fxDealRepository.save(deal);
             log.info("Saved deal with ID {}", deal.getUniqueId());
 
-        return new FXDealResponse(true, false, deal, HttpStatus.CREATED.value());
+        return  deal;
     }
 
 
@@ -58,16 +58,13 @@ public class FXDealServiceImpl implements FXDealService {
     }
 
     @Override
-    public List<FXDealResponse> getAllFXDeals() {
+    public List<FXDeal> getAllFXDeals() {
 
-        List<FXDeal> deals = fxDealRepository.findAll();
-
-        return deals.stream()
-                .map(deal -> new FXDealResponse(true, false, deal, HttpStatus.OK.value()))
-                .collect(Collectors.toList());
+        return fxDealRepository.findAll();
 
     }
 
 }
+
 
 

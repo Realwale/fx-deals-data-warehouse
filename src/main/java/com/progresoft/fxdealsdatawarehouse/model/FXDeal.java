@@ -34,4 +34,12 @@ public class FXDeal {
 
     @JsonProperty("deal_amount")
     private BigDecimal dealAmount;
+
+    public FXDeal(String uniqueId, String fromCurrency, String toCurrency, Instant dealTimestamp, BigDecimal dealAmount) {
+        this.uniqueId = uniqueId;
+        this.fromCurrency = fromCurrency;
+        this.toCurrency = toCurrency;
+        this.dealTimestamp = dealTimestamp;
+        this.dealAmount = dealAmount;
+    }
 }
