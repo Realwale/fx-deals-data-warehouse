@@ -22,6 +22,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(DuplicateDealException.class)
+    public ResponseEntity<FXDealResponse> handleNotFoundExceptions(DuplicateDealException ex) {
+        FXDealResponse response = createErrorResponse(HttpStatus.CONFLICT, ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
+
     private FXDealResponse createErrorResponse(HttpStatus status, String message) {
         FXDealResponse response = new FXDealResponse();
         response.setSuccess(false);
