@@ -71,11 +71,11 @@ POST /api/fx-deal/import
 
 ```json
 {
-  "unique_id": "FX346",
+  "unique_id": "FX2317",
   "from_currency": "EUR",
   "to_currency": "USD",
-  "deal_timestamp": "2023-10-12T20:17:53.575Z",
-  "deal_amount": 100.5
+  "deal_timestamp": "2023-10-22T19:18:50.685Z",
+  "deal_amount": 110
 }
 ```
 
@@ -83,27 +83,22 @@ POST /api/fx-deal/import
 
 ```json
 {
-  "success": true,
-  "error": false,
-  "data": {
-    "id": "5d28c4a6-2bbc-46fc-8671-e85ff26bebb0",
-    "unique_id": "FX346",
-    "from_currency": "EUR",
-    "to_currency": "USD",
-    "deal_timestamp": "2023-10-12T20:17:53.575Z",
-    "deal_amount": 100.5
-  },
-  "status_code": 201
+  "id": "22dcd65c-b730-46a1-aede-afdb5e9ce01c",
+  "unique_id": "FX2317",
+  "from_currency": "EUR",
+  "to_currency": "USD",
+  "deal_timestamp": "2023-10-22T19:18:50.685Z",
+  "deal_amount": 110
 }
 ```
 
-**Error Response (Attempting duplication of Deal)**:
+**Error Response (Handling duplication of Deal entries)**:
 
 ```json
 {
   "success": false,
   "error": true,
-  "data": "Deal already exists with ID: FX346",
+  "data": "Deal already exists with ID: FX2315",
   "status_code": 409
 }
 ```
@@ -145,7 +140,7 @@ GET /api/fx-deal/{uniqueId}
 
 ```json
 {
-  "unique_id": "FX159"
+  "unique_id": "FX2317"
 }
 ```
 **Success Response**:
@@ -155,12 +150,12 @@ GET /api/fx-deal/{uniqueId}
   "success": true,
   "error": false,
   "data": {
-    "id": "96f5a587-13fc-4213-84cd-73578186403c",
-    "unique_id": "FX159",
-    "from_currency": "USD",
-    "to_currency": "EUR",
-    "deal_timestamp": "2023-10-12T21:34:25.326Z",
-    "deal_amount": 200
+    "id": "22dcd65c-b730-46a1-aede-afdb5e9ce01c",
+    "unique_id": "FX2317",
+    "from_currency": "EUR",
+    "to_currency": "USD",
+    "deal_timestamp": "2023-10-22T19:18:50.685Z",
+    "deal_amount": 110
   },
   "status_code": 200
 }
@@ -195,30 +190,28 @@ GET /api/fx-deal
 ```json
 [
   {
-    "success": true,
-    "error": false,
-    "data": {
-      "id": "be090e8c-2fe8-43b6-964f-ada8b7f051ce",
-      "unique_id": "FX136",
-      "from_currency": "EUR",
-      "to_currency": "USD",
-      "deal_timestamp": "2023-10-12T21:34:25.326Z",
-      "deal_amount": 100
-    },
-    "status_code": 200
+    "id": "ed6ced87-1bf8-430d-b0ee-062a989eee42",
+    "unique_id": "FX2315",
+    "from_currency": "EUR",
+    "to_currency": "USD",
+    "deal_timestamp": "2023-10-22T19:18:50.685Z",
+    "deal_amount": 110
   },
   {
-    "success": true,
-    "error": false,
-    "data": {
-      "id": "96f5a587-13fc-4213-84cd-73578186403c",
-      "unique_id": "FX159",
-      "from_currency": "USD",
-      "to_currency": "EUR",
-      "deal_timestamp": "2023-10-12T21:34:25.326Z",
-      "deal_amount": 200
-    },
-    "status_code": 200
+    "id": "705181c7-6ed9-46b6-be98-d3fa077ee3ad",
+    "unique_id": "FX2316",
+    "from_currency": "EUR",
+    "to_currency": "USD",
+    "deal_timestamp": "2023-10-22T19:18:50.685Z",
+    "deal_amount": 110
+  },
+  {
+    "id": "22dcd65c-b730-46a1-aede-afdb5e9ce01c",
+    "unique_id": "FX2317",
+    "from_currency": "EUR",
+    "to_currency": "USD",
+    "deal_timestamp": "2023-10-22T19:18:50.685Z",
+    "deal_amount": 110
   }
 ]
 ```
